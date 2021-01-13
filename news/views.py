@@ -1,8 +1,9 @@
 from django.shortcuts import render
 import requests
 from bs4 import BeautifulSoup
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-# GEtting news from Times of India
+# Getting news from Times of India
 
 times_of_India_res = requests.get("https://timesofindia.indiatimes.com/briefs")
 times_of_India_soup = BeautifulSoup(times_of_India_res.content, 'html5lib')
@@ -21,10 +22,11 @@ for art in articles:
         except:
                 pass
 
-  
+# Getting news from Newsapi
+
 newsapi_url = " https://newsapi.org/v1/articles?source=bbc-news&sortBy=top&apiKey=4dbc17e007ab436fb66416009dfb59a8"
   
-# fetching data in json format 
+
 open_bbc_page = requests.get(newsapi_url).json() 
 
 articles = open_bbc_page["articles"]
@@ -42,5 +44,13 @@ mn=min(len(times_of_India),len(newsapi))
 times_of_India=times_of_India[:mn]
 newsapi=newsapi[:mn]
 
+
 def index(req):
-    return render(req, 'news/index.html', {'toi_news':times_of_India, 'newsapi_news':newsapi})
+        paginator1 = Paginator(times_of_India, 3) 
+        page_number1 = req.GET.get('page')
+        page_obj1 = paginator1.get_page(page_number1)
+        paginator2 = Paginator(newsapi, 3) 
+        page_number2 = req.GET.get('page')
+        page_obj2 = paginator2.get_page(page_number2)
+
+        return render(req, 'news/index.html', {'page_obj1':page_obj1, 'page_obj2':page_obj2})
