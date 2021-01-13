@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-6">
                 <h1>Times of India</h1>
-                {% for article in toi_news %}
+                {% for article in page_obj1 %}
                     <section>
                         <article >
                             <img src="{{article.urlToImage}}" alt=""  width="325" height="200"/>
@@ -31,7 +31,7 @@
             </div>
             <div class="col-6">
                 <h1>News API</h1>
-                {% for article in newsapi_news %}
+                {% for article in page_obj2 %}
                     <section>
                         <article >
                             <img src="{{article.urlToImage}}" alt=""  width="325" height="200"/>
@@ -42,8 +42,26 @@
                     </section>  
                 {%endfor%} 
             </div>
+            {% if page_obj1.has_previous %}
+                <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj1.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj1.paginator.page_range %}
+                {% if page_obj1.number == num %}
+                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% elif num > page_obj1.number|add:'-3' and num < page_obj1.number|add:'3' %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj1.has_next %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj1.next_page_number }}">Next</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj1.paginator.num_pages }}">Last</a>
+            {% endif %}
         </div>
     </div>
+    
     <script
         src="http://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
